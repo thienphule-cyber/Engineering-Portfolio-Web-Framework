@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}{{ project.title }} - Engineering Portfolio{% endblock %}
+
+{% block content %}
+<section class="project-detail">
+    <div class="project-detail-header">
+        <h1>{{ project.title }}</h1>
+        <div class="project-actions">
+            <a href="{{ url_for('edit_project', slug=project.slug) }}" class="btn">Edit Project</a>
+            <form method="POST" action="{{ url_for('delete_project', slug=project.slug) }}"
+                  onsubmit="return confirm('Delete this project? This cannot be undone.');" style="display: inline;">
+                <button type="submit" class="btn btn-danger">Delete Project</button>
+            </form>
+        </div>
+    </div>
+
+    <p class="category">{{ project.category }}</p>
+
+    <h2>Objective</h2>
+    <p>{{ project.objective }}</p>
+
+    <h2>Problem Statement</h2>
+    <p>{{ project.problem }}</p>
+
+    <h2>System Architecture</h2>
+    <ol>
+        {% for step in project.architecture %}
+        <li>{{ step }}</li>
+        {% endfor %}
+    </ol>
+
+    <h2>Hardware</h2>
+    <ul>
+        {% for item in project.hardware %}
+        <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Software</h2>
+    <ul>
+        {% for item in project.software %}
+        <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Engineering Process</h2>
+    <div class="process-flow">
+        {% for step in project.process %}
+        <span class="process-step">{{ step }}</span>{% if not loop.last %} &rarr; {% endif %}
+        {% endfor %}
+    </div>
+
+    <a href="{{ url_for('gallery') }}" class="btn">Back to Projects</a>
+</section>
+{% endblock %}

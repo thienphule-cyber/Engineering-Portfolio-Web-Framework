@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Home - Engineering Portfolio{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>Mechatronics Engineering Student</h1>
+    <p>Robotics &middot; Embedded Systems &middot; Artificial Intelligence &middot; Automation</p>
+</section>
+
+<section class="featured-projects">
+    <h2>Featured Projects</h2>
+
+    {% if projects %}
+    <div class="project-grid">
+        {% for project in projects %}
+        <div class="project-card">
+            <h3>{{ project.title }}</h3>
+            <p class="category">{{ project.category }}</p>
+            <p>{{ project.objective[:100] }}...</p>
+            <a href="{{ url_for('project_detail', slug=project.slug) }}" class="btn">View Details</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty-state">No projects yet. Add a .json file to the <code>projects/</code> folder to get started.</p>
+    {% endif %}
+</section>
+{% endblock %}

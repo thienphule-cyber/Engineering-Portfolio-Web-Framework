@@ -1,0 +1,34 @@
+{
+  "title": "AI-Powered CAD Design Mentor & Engineering Assistant",
+  "category": "AI + Computer Vision + Mechanical Design",
+  "objective": "Build a platform-independent AI assistant that teaches mechanical design thinking by guiding users through CAD modeling strategy from images or natural language descriptions.",
+  "problem": "Traditional CAD tools and plugins teach software operation rather than design thinking, and are often tied to a specific CAD platform.",
+  "architecture": [
+    "Input Layer (Image / Text / Question)",
+    "Shape Recognition (Computer Vision)",
+    "Requirement-to-Feature Conversion",
+    "CAD Design Strategy Planning",
+    "Modeling Sequence Recommendation (Sketch to Feature to Assembly)",
+    "Engineering Explanation Generator"
+  ],
+  "hardware": [
+    "None"
+  ],
+  "software": [
+    "Python",
+    "Computer Vision libraries",
+    "LLM API",
+    "Natural Language Processing"
+  ],
+  "process": [
+    "Requirement Analysis",
+    "System Design",
+    "Implementation",
+    "Testing",
+    "Evaluation",
+    "Future Improvement"
+  ],
+  "images": [],
+  "videos": [],
+  "documents": []
+}

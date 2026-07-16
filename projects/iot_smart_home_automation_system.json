@@ -1,0 +1,38 @@
+{
+  "title": "IoT Smart Home Automation System",
+  "category": "IoT, Embedded Systems, Automation",
+  "objective": "Develop a smart home prototype capable of monitoring environmental conditions and automatically controlling household devices.",
+  "problem": "Create an automated system that improves energy efficiency and user convenience through monitoring and intelligent control.",
+  "architecture": [
+    "Microcontroller",
+    "Control Logic",
+    "Motor Control",
+    "Web Server Interface",
+    "User Interaction"
+  ],
+  "hardware": [
+    "Arduino Board",
+    "LED Lighting System",
+    "Servo Motor",
+    "WiFi module integrated in Arduino UNO R4 WiFi"
+  ],
+  "software": [
+    "C++",
+    "Arduino IDE",
+    "HTML",
+    "Embedded Web Server"
+  ],
+  "process": [
+    "Requirement Analysis",
+    "System Design",
+    "Circuit Implementation",
+    "Software Development",
+    "Hardware Testing",
+    "System Integration",
+    "Evaluation",
+    "Future Improvement"
+  ],
+  "images": [],
+  "videos": [],
+  "documents": []
+}

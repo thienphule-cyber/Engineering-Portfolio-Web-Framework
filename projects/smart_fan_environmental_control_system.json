@@ -1,0 +1,38 @@
+{
+  "title": "Smart Fan Environmental Control System",
+  "category": "Embedded Systems, Automation, IoT",
+  "objective": "Develop an automatic fan control system that adjusts motor speed based on environmental temperature and humidity measurements.",
+  "problem": "Design an energy-efficient cooling system that automatically responds to changing environmental conditions without manual adjustment.",
+  "architecture": [
+    "Temperature Sensor",
+    "Humidity Sensor",
+    "Microcontroller",
+    "Control Algorithm",
+    "Servo Motor"
+  ],
+  "hardware": [
+    "Arduino UNO",
+    "Temperature Sensor",
+    "Humidity Sensor",
+    "Servo Motor",
+    "LCD I2C Display"
+  ],
+  "software": [
+    "C++",
+    "Arduino IDE",
+    "PWM Motor Control",
+    "Sensor Data Processing"
+  ],
+  "process": [
+    "Requirement Analysis",
+    "Circuit Design",
+    "Control Algorithm Development",
+    "Prototype Assembly",
+    "Testing",
+    "Performance Evaluation",
+    "Future Improvement"
+  ],
+  "images": [],
+  "videos": [],
+  "documents": []
+}

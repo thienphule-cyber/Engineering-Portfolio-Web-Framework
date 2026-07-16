@@ -1,0 +1,30 @@
+{
+  "title": "Project Title Here",
+  "category": "Robotics",
+  "objective": "One or two sentences describing what this project sets out to achieve.",
+  "problem": "The technical problem or challenge this project addresses.",
+  "architecture": [
+    "Step or block 1",
+    "Step or block 2",
+    "Step or block 3"
+  ],
+  "hardware": [
+    "Component 1",
+    "Component 2"
+  ],
+  "software": [
+    "Language / Framework 1",
+    "Language / Framework 2"
+  ],
+  "process": [
+    "Requirement Analysis",
+    "System Design",
+    "Implementation",
+    "Testing",
+    "Evaluation",
+    "Future Improvement"
+  ],
+  "images": [],
+  "videos": [],
+  "documents": []
+}

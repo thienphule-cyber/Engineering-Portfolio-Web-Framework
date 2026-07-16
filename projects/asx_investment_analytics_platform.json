@@ -1,0 +1,46 @@
+{
+  "title": "ASX Investment Analytics Platform",
+  "category": "Software + Data + Machine Learning",
+  "objective": "Build a full-stack investment research and portfolio management platform tailored to the Australian Securities Exchange (ASX), combining fundamental, technical, ML-based and risk analytics.",
+  "problem": "Individual investors lack an integrated, ASX-specific tool that combines portfolio tracking, market data, financial analysis, risk analytics and reporting in one platform.",
+  "architecture": [
+    "Authentication Module",
+    "Portfolio Module",
+    "Market Data Module",
+    "Financial Analysis Module",
+    "Machine Learning Module",
+    "Risk Analytics Module",
+    "Report Module",
+    "Database Module",
+    "System Core Module"
+  ],
+  "hardware": [
+    "None"
+  ],
+  "software": [
+    "Python",
+    "FastAPI",
+    "SQLAlchemy",
+    "PostgreSQL",
+    "pandas",
+    "NumPy",
+    "scikit-learn (Random Forest)",
+    "pytest",
+    "ReportLab",
+    "openpyxl",
+    "HTML5",
+    "CSS3",
+    "JavaScript"
+  ],
+  "process": [
+    "Requirement Analysis",
+    "System Design",
+    "Implementation",
+    "Testing",
+    "Evaluation",
+    "Future Improvement"
+  ],
+  "images": [],
+  "videos": [],
+  "documents": []
+}

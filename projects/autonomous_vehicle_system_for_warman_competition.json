@@ -1,0 +1,40 @@
+{
+  "title": "Autonomous Vehicle System for Warman Competition",
+  "category": "Robotics, Embedded Systems, Autonomous Systems",
+  "objective": "Develop an autonomous mobile robot capable of navigating an environment, detecting obstacles, and completing predefined tasks through integrated mechanical design, embedded control, and robotics algorithms.",
+  "problem": "Design and develop a robotic platform that integrates mechanical structure, electronic control, and autonomous navigation algorithms to achieve reliable movement and task execution under competition constraints.",
+  "architecture": [
+    "Arduino Mega 2560",
+    "Embedded Control Algorithm",
+    "Motor Driver",
+    "DC Motors",
+    "Autonomous Navigation System"
+  ],
+  "hardware": [
+    "Arduino Mega 2560",
+    "DC Motors",
+    "Motor Driver",
+    "Ultrasonic Sensors",
+    "Battery System",
+    "Mechanical Chassis",
+    "3D Printed Components"
+  ],
+  "software": [
+    "C/C++",
+    "Embedded Programming"
+  ],
+  "process": [
+    "Requirement Analysis",
+    "System Design",
+    "Mechanical CAD Modelling",
+    "Electronic Integration",
+    "Embedded Programming",
+    "Prototype Development",
+    "Testing",
+    "Performance Evaluation",
+    "Future Improvement"
+  ],
+  "images": [],
+  "videos": [],
+  "documents": []
+}

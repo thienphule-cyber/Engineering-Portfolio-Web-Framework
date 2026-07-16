@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Contact - Engineering Portfolio{% endblock %}
+
+{% block content %}
+<section class="contact">
+    <h2>Contact</h2>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="flash-message flash-success">
+            {% for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Show a friendly placeholder if a field has not been filled in yet -->
+    <p>Email: {{ contact.email if contact.email else "Not set yet" }}</p>
+    <p>Phone: {{ contact.phone if contact.phone else "Not set yet" }}</p>
+    <p>
+        LinkedIn:
+        {% if contact.linkedin %}
+        <a href="{{ contact.linkedin }}" target="_blank">{{ contact.linkedin }}</a>
+        {% else %}
+        Not set yet
+        {% endif %}
+    </p>
+    <p>
+        GitHub:
+        {% if contact.github %}
+        <a href="{{ contact.github }}" target="_blank">{{ contact.github }}</a>
+        {% else %}
+        Not set yet
+        {% endif %}
+    </p>
+
+    <a href="{{ url_for('edit_contact') }}" class="btn">Edit Contact Info</a>
+</section>
+{% endblock %}

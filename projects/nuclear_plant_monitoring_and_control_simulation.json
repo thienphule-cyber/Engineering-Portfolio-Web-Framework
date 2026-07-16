@@ -1,0 +1,40 @@
+{
+  "title": "Nuclear Plant Monitoring and Control Simulation",
+  "category": "Embedded Systems, Industrial Automation, Simulation",
+  "objective": "Develop a miniature nuclear plant simulation model to demonstrate sensor monitoring, actuator control, and automated safety responses.",
+  "problem": "Create an educational simulation platform that represents industrial monitoring and control processes using embedded hardware.",
+  "architecture": [
+    "Input Monitoring",
+    "Arduino Controller",
+    "Data Processing",
+    "Motor Control",
+    "Safety Logic",
+    "User Display"
+  ],
+  "hardware": [
+    "Arduino UNO R4",
+    "Temperature - Pressure simulated signals",
+    "DC Motors",
+    "Motor Drivers",
+    "LCD Display",
+    "LED Indicators"
+  ],
+  "software": [
+    "C++",
+    "Arduino IDE",
+    "Python for simulation modeling and data analysis"
+  ],
+  "process": [
+    "Requirement Analysis",
+    "System Modelling",
+    "Hardware Selection",
+    "Control Development",
+    "Prototype Construction",
+    "Testing",
+    "Evaluation",
+    "Future Improvement"
+  ],
+  "images": [],
+  "videos": [],
+  "documents": []
+}

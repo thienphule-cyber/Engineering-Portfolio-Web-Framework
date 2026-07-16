@@ -1,0 +1,41 @@
+{
+  "title": "Ai-chan - AI Companion Platform",
+  "category": "AI + NLP",
+  "objective": "Build an AI companion platform focused on natural, long-term conversation, responsible memory, and personalized interaction rather than task execution.",
+  "problem": "Most chatbots are optimized for quick task completion rather than sustained, natural, privacy-respecting conversation and relationship-building with users.",
+  "architecture": [
+    "Frontend (Web UI)",
+    "Conversation Manager",
+    "Large Language Model",
+    "Memory Module",
+    "Knowledge Base (RAG)",
+    "Response Generator",
+    "Web Interface"
+  ],
+  "hardware": [
+    "None"
+  ],
+  "software": [
+    "Python",
+    "FastAPI",
+    "SQLite / PostgreSQL",
+    "FAISS / ChromaDB",
+    "LLM API",
+    "Whisper",
+    "Text-to-Speech",
+    "HTML",
+    "CSS",
+    "JavaScript"
+  ],
+  "process": [
+    "Requirement Analysis",
+    "System Design",
+    "Implementation",
+    "Testing",
+    "Evaluation",
+    "Future Improvement"
+  ],
+  "images": [],
+  "videos": [],
+  "documents": []
+}

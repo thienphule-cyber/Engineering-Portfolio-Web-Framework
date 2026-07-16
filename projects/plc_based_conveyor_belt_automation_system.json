@@ -1,0 +1,39 @@
+{
+  "title": "PLC-Based Conveyor Belt Automation System",
+  "category": "Industrial Automation, Control Systems",
+  "objective": "Develop a conveyor belt automation model demonstrating industrial control logic, sensor feedback, and automated material handling.",
+  "problem": "Simulate an industrial automation system capable of detecting objects, controlling motors, and executing predefined operational sequences.",
+  "architecture": [
+    "Input Sensors",
+    "Control Logic",
+    "PLC Controller",
+    "Motor Driver",
+    "Conveyor System",
+    "Output Control"
+  ],
+  "hardware": [
+    "Arduino Controller",
+    "Servo Motor",
+    "Infrared Sensors",
+    "LED Indicators"
+  ],
+  "software": [
+    "C/C++",
+    "Arduino IDE",
+    "MATLAB",
+    "SolidWorks"
+  ],
+  "process": [
+    "Requirement Analysis",
+    "Industrial System Modelling",
+    "Control Logic Design",
+    "Hardware Assembly",
+    "Programming",
+    "Testing",
+    "System Evaluation",
+    "Future Improvement"
+  ],
+  "images": [],
+  "videos": [],
+  "documents": []
+}

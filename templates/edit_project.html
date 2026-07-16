@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Edit Project - Engineering Portfolio{% endblock %}
+
+{% block content %}
+<section class="add-project">
+    <h2>Edit Project</h2>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="flash-message">
+            {% for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('edit_project', slug=slug) }}" class="project-form">
+        <label for="title">Project Title *</label>
+        <input type="text" id="title" name="title" value="{{ form_data.title or '' }}" required>
+
+        <label for="category">Category</label>
+        <input type="text" id="category" name="category" placeholder="e.g. Robotics, AI + IoT"
+               value="{{ form_data.category or '' }}">
+
+        <label for="objective">Objective</label>
+        <textarea id="objective" name="objective" rows="3">{{ form_data.objective or '' }}</textarea>
+
+        <label for="problem">Problem Statement</label>
+        <textarea id="problem" name="problem" rows="3">{{ form_data.problem or '' }}</textarea>
+
+        <label for="architecture">System Architecture (one item per line)</label>
+        <textarea id="architecture" name="architecture" rows="4">{{ form_data.architecture or '' }}</textarea>
+
+        <label for="hardware">Hardware (one item per line)</label>
+        <textarea id="hardware" name="hardware" rows="3">{{ form_data.hardware or '' }}</textarea>
+
+        <label for="software">Software (one item per line)</label>
+        <textarea id="software" name="software" rows="3">{{ form_data.software or '' }}</textarea>
+
+        <label for="process">Engineering Process (one step per line)</label>
+        <textarea id="process" name="process" rows="4">{{ form_data.process or '' }}</textarea>
+
+        <button type="submit" class="btn">Save Changes</button>
+    </form>
+
+    <a href="{{ url_for('project_detail', slug=slug) }}" class="btn btn-secondary">Cancel</a>
+</section>
+{% endblock %}

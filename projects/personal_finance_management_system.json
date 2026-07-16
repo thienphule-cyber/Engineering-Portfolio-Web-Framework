@@ -1,0 +1,40 @@
+{
+  "title": "Personal Finance Management System",
+  "category": "Full-Stack Web Application",
+  "objective": "Develop a full-stack personal finance management web application with financial overview, transaction tracking, budgeting reports and responsive design across devices.",
+  "problem": "Individuals need an accessible, cross-device tool to track transactions, manage budgets and visualize financial reports without installing dedicated software.",
+  "architecture": [
+    "Client-Server Architecture",
+    "RESTful API Layer",
+    "Presentation Layer",
+    "Business Logic Layer",
+    "Data Access Layer",
+    "Relational Database"
+  ],
+  "hardware": [
+    "None"
+  ],
+  "software": [
+    "Python",
+    "FastAPI",
+    "SQLAlchemy",
+    "PostgreSQL",
+    "JWT Authentication",
+    "Docker",
+    "Nginx",
+    "HTML5",
+    "CSS3",
+    "JavaScript"
+  ],
+  "process": [
+    "Requirement Analysis",
+    "System Design",
+    "Implementation",
+    "Testing",
+    "Evaluation",
+    "Future Improvement"
+  ],
+  "images": [],
+  "videos": [],
+  "documents": []
+}

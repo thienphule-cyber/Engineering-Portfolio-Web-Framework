@@ -1,0 +1,45 @@
+{
+  "title": "IoT-Based Vital Signs Monitoring System",
+  "category": "AI, Computer Vision, IoT, Biomedical Engineering",
+  "objective": "Develop a non-contact health monitoring system capable of estimating human vital signs using computer vision and embedded IoT technologies.",
+  "problem": "Traditional health monitoring requires physical contact with sensors. This project explores a contactless approach using camera-based physiological signal extraction and wireless embedded systems.",
+  "architecture": [
+    "Camera Input",
+    "Computer Vision Processing",
+    "rPPG Signal Extraction",
+    "Signal Processing Algorithm",
+    "Microcontroller Communication",
+    "IoT Data Transmission",
+    "Health Data Visualization"
+  ],
+  "hardware": [
+    "Laptop Camera and Micro",
+    "Arduino UNO R4 WiFi",
+    "LEDs",
+    "I2C LCD Display"
+  ],
+  "software": [
+    "Python",
+    "OpenCV",
+    "MediaPipe",
+    "NumPy",
+    "FFT Signal Processing",
+    "MQTT Protocol",
+    "Arduino IDE",
+    "C++"
+  ],
+  "process": [
+    "Requirement Analysis",
+    "System Architecture Design",
+    "Computer Vision Development",
+    "Embedded System Integration",
+    "Signal Processing Implementation",
+    "Prototype Testing",
+    "Accuracy Evaluation",
+    "System Optimization",
+    "Future Improvement"
+  ],
+  "images": [],
+  "videos": [],
+  "documents": []
+}
