@@ -4,7 +4,7 @@
 {% block content %}
 <section class="about-hero">
     {% if has_photo %}
-    <img src="{{ url_for('static', filename='assets/images/profile.jpg') }}" alt="Profile photo" class="profile-image">
+    <img src="{{ url_for('about_photo') }}" alt="Profile photo" class="profile-image">
     {% else %}
     <div class="profile-image profile-placeholder">No Photo</div>
     {% endif %}

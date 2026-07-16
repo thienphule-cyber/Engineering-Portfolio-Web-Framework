@@ -1,28 +1,26 @@
 """
 Engineering Portfolio Web Framework
-Main Flask application. Projects and contact info are now stored in
-PostgreSQL (via SQLAlchemy) instead of local JSON files, so data
-survives Render redeploys. Profile photo is still stored on disk
-(see note in edit_photo route about its own limitation).
+Main Flask application. Projects, contact info, and the profile photo
+are all stored in PostgreSQL (via SQLAlchemy) instead of local files,
+so all data survives Render redeploys (Render's free tier uses an
+ephemeral filesystem that is wiped on every deploy).
 """
 
 import os
 import json
+import re
+import base64
 from pathlib import Path
 from dotenv import load_dotenv
-from werkzeug.utils import secure_filename
-from flask import Flask, render_template, abort, request, redirect, url_for, flash
+from flask import Flask, render_template, abort, request, redirect, url_for, flash, Response
 from sqlalchemy import create_engine, Column, Integer, String, Text
 from sqlalchemy.orm import declarative_base, sessionmaker
-import re
 
 load_dotenv(dotenv_path=".env")  # reads .env when running locally; Render provides env vars directly
 
 app = Flask(__name__)
-app.secret_key = "change-this-secret-key"
+app.secret_key = "change-this-secret-key"  # needed for flash messages
 
-IMAGES_DIR = Path(__file__).parent / "static" / "assets" / "images"
-PROFILE_PHOTO_FILENAME = "profile.jpg"
 ALLOWED_PHOTO_EXTENSIONS = {"jpg", "jpeg"}
 
 # ------------------------------------------------------------
@@ -78,6 +76,16 @@ class ContactInfo(Base):
     phone = Column(String, default="")
     linkedin = Column(String, default="")
     github = Column(String, default="")
+
+
+class ProfilePhoto(Base):
+    __tablename__ = "profile_photo"
+
+    id = Column(Integer, primary_key=True)
+    # The image is stored as a base64-encoded string so it survives
+    # Render redeploys, unlike files saved to the ephemeral disk.
+    image_data = Column(Text, nullable=False)
+    mime_type = Column(String, default="image/jpeg")
 
 
 # Create tables if they don't exist yet (safe to run every startup)
@@ -165,7 +173,8 @@ def delete_project_by_slug(slug):
 
 
 def slugify(title):
-    """Convert a project title into a URL-safe, filename-safe slug."""
+    """Convert a project title into a URL-safe, filename-safe slug.
+    Example: 'Autonomous Vehicle!' -> 'autonomous_vehicle'"""
     slug = title.strip().lower()
     slug = re.sub(r"[^a-z0-9\s-]", "", slug)
     slug = re.sub(r"[\s-]+", "_", slug)
@@ -173,14 +182,16 @@ def slugify(title):
 
 
 def lines_to_list(text):
-    """Convert a multi-line textarea input into a list of strings."""
+    """Convert a multi-line textarea input into a list of strings,
+    skipping empty lines."""
     if not text:
         return []
     return [line.strip() for line in text.splitlines() if line.strip()]
 
 
 def list_to_lines(items):
-    """Convert a list of strings back into newline-joined text."""
+    """Convert a list of strings back into newline-joined text,
+    used to pre-fill textareas when editing an existing project."""
     if not items:
         return ""
     return "\n".join(items)
@@ -228,18 +239,44 @@ def save_contact_info(data):
 
 
 # ------------------------------------------------------------
-# Profile photo helpers (still file-based, see note in edit_photo route)
+# Profile photo helpers (stored as base64 text in PostgreSQL)
 # ------------------------------------------------------------
 
 def is_allowed_photo(filename):
+    """Check whether the uploaded file has an allowed image extension."""
     if "." not in filename:
         return False
     extension = filename.rsplit(".", 1)[1].lower()
     return extension in ALLOWED_PHOTO_EXTENSIONS
 
 
-def profile_photo_exists():
-    return (IMAGES_DIR / PROFILE_PHOTO_FILENAME).exists()
+def load_profile_photo():
+    """Load the stored profile photo row from the database.
+    Returns None if no photo has been uploaded yet."""
+    session = SessionLocal()
+    try:
+        photo = session.query(ProfilePhoto).first()
+        return photo
+    finally:
+        session.close()
+
+
+def save_profile_photo(image_bytes, mime_type):
+    """Save or replace the profile photo in the database as base64 text."""
+    encoded = base64.b64encode(image_bytes).decode("utf-8")
+
+    session = SessionLocal()
+    try:
+        photo = session.query(ProfilePhoto).first()
+        if photo is None:
+            photo = ProfilePhoto(image_data=encoded, mime_type=mime_type)
+            session.add(photo)
+        else:
+            photo.image_data = encoded
+            photo.mime_type = mime_type
+        session.commit()
+    finally:
+        session.close()
 
 
 # ------------------------------------------------------------
@@ -254,17 +291,27 @@ def home():
 
 @app.route("/about")
 def about():
-    has_photo = profile_photo_exists()
-    return render_template("about.html", has_photo=has_photo)
+    photo = load_profile_photo()
+    return render_template("about.html", has_photo=photo is not None)
+
+
+@app.route("/about/photo")
+def about_photo():
+    """Serve the profile photo directly from database bytes.
+    This route acts like an image file URL (e.g. <img src="/about/photo">)
+    even though the image is actually stored in PostgreSQL, not on disk."""
+    photo = load_profile_photo()
+    if photo is None:
+        abort(404)
+
+    image_bytes = base64.b64decode(photo.image_data)
+    return Response(image_bytes, mimetype=photo.mime_type)
 
 
 @app.route("/about/edit-photo", methods=["GET", "POST"])
 def edit_photo():
-    """Upload/replace the profile photo.
-    NOTE: this still writes to local disk, which is ephemeral on Render's
-    free tier. The photo will be lost on redeploy unless you upgrade to a
-    paid instance with a Persistent Disk, or store the photo in the
-    database as binary data instead."""
+    """Upload/replace the profile photo. The image is stored as base64
+    text inside PostgreSQL, so it survives Render redeploys."""
     if request.method == "POST":
         uploaded_file = request.files.get("photo")
 
@@ -276,15 +323,14 @@ def edit_photo():
             flash("Only .jpg or .jpeg files are allowed.")
             return redirect(url_for("edit_photo"))
 
-        IMAGES_DIR.mkdir(parents=True, exist_ok=True)
-        destination = IMAGES_DIR / PROFILE_PHOTO_FILENAME
-        uploaded_file.save(destination)
+        image_bytes = uploaded_file.read()
+        save_profile_photo(image_bytes, mime_type="image/jpeg")
 
         flash("Profile photo updated successfully.")
         return redirect(url_for("about"))
 
-    has_photo = profile_photo_exists()
-    return render_template("edit_photo.html", has_photo=has_photo)
+    photo = load_profile_photo()
+    return render_template("edit_photo.html", has_photo=photo is not None)
 
 
 # ------------------------------------------------------------
@@ -308,6 +354,7 @@ def project_detail(slug):
 
 @app.route("/projects/new", methods=["GET", "POST"])
 def add_project():
+    """Display the add-project form (GET) and handle its submission (POST)."""
     if request.method == "POST":
         title = request.form.get("title", "").strip()
         category = request.form.get("category", "").strip()
@@ -347,6 +394,8 @@ def add_project():
 
 @app.route("/projects/<slug>/edit", methods=["GET", "POST"])
 def edit_project(slug):
+    """Display the edit form pre-filled with existing project data (GET),
+    and save changes back to the same database row (POST)."""
     project = load_project(slug)
     if project is None:
         abort(404)
@@ -395,6 +444,7 @@ def edit_project(slug):
 
 @app.route("/projects/<slug>/delete", methods=["POST"])
 def delete_project(slug):
+    """Delete a project's database row."""
     if not delete_project_by_slug(slug):
         abort(404)
     flash("Project deleted.")

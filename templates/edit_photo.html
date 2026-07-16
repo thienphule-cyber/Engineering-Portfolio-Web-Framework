@@ -17,7 +17,7 @@
 
     {% if has_photo %}
     <p>Current photo:</p>
-    <img src="{{ url_for('static', filename='assets/images/profile.jpg') }}" alt="Current profile photo" class="profile-image-preview">
+    <img src="{{ url_for('about_photo') }}" alt="Current profile photo" class="profile-image-preview">
     {% else %}
     <p>No photo uploaded yet.</p>
     {% endif %}
