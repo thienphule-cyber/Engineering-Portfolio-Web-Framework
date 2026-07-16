@@ -9,7 +9,7 @@ cd "$(dirname "$0")"
 
 PID_FILE=".server.pid"
 LOG_FILE="server.log"
-PORT=5000
+PORT=5050
 
 # Check if the server is already running
 if [ -f "$PID_FILE" ]; then

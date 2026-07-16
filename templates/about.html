@@ -1,18 +1,139 @@
 {% extends "base.html" %}
-{% block title %}About - Engineering Portfolio{% endblock %}
+{% block title %}About Me - Engineering Portfolio{% endblock %}
 
 {% block content %}
-<section class="about">
-    <h2>Education</h2>
-    <p>Bachelor of Engineering (Honours), Mechatronics Engineering</p>
+<section class="about-hero">
+    {% if has_photo %}
+    <img src="{{ url_for('static', filename='assets/images/profile.jpg') }}" alt="Profile photo" class="profile-image">
+    {% else %}
+    <div class="profile-image profile-placeholder">No Photo</div>
+    {% endif %}
 
-    <h2>Technical Interests</h2>
+    <div class="about-hero-text">
+        <h1>Thien Phu Le</h1>
+        <p class="subtitle">Mechatronics Engineering Student</p>
+        <a href="{{ url_for('edit_photo') }}" class="btn btn-small">Edit Photo</a>
+    </div>
+</section>
+
+<section class="about-section">
+    <h2>Introduction</h2>
     <ul>
-        <li>Robotics</li>
-        <li>Computer Vision</li>
-        <li>Embedded Systems</li>
-        <li>IoT</li>
-        <li>Automation</li>
+        <li>Mechatronics Engineering student at the University of Technology Sydney (UTS) with interests in robotics, embedded systems, automation, and intelligent engineering applications.</li>
+        <li>Experienced in developing multidisciplinary engineering projects by combining mechanical design, microcontroller programming, sensor integration, and software development.</li>
+        <li>Hands-on experience in designing and implementing embedded systems, IoT applications, robotic simulations, and automation prototypes through academic and personal projects.</li>
+        <li>Interested in applying engineering knowledge and programming skills to develop practical solutions for real-world problems.</li>
+    </ul>
+</section>
+
+<section class="about-section">
+    <h2>Education</h2>
+    <div class="education-block">
+        <h3>Bachelor of Engineering (Honours)</h3>
+        <p class="education-major">Major: Mechatronics Engineering</p>
+        <p class="education-university">University of Technology Sydney (UTS)</p>
+
+        <p class="education-label">Relevant Engineering Areas:</p>
+        <ul>
+            <li>Robotics and Autonomous Systems</li>
+            <li>Embedded Systems</li>
+            <li>Control Systems</li>
+            <li>Mechanical Design</li>
+            <li>Programming</li>
+            <li>Electronics and Sensor Integration</li>
+        </ul>
+    </div>
+</section>
+
+<section class="about-section">
+    <h2>Technical Skills</h2>
+
+    <div class="skills-grid">
+        <div class="skill-category">
+            <h3>Programming &amp; Software Development</h3>
+            <ul>
+                <li>Python</li>
+                <li>C/C++</li>
+                <li>MATLAB</li>
+                <li>Java</li>
+                <li>HTML/CSS</li>
+                <li>JavaScript</li>
+                <li>Git/GitHub</li>
+                <li>Visual Studio Code</li>
+            </ul>
+        </div>
+
+        <div class="skill-category">
+            <h3>Embedded Systems &amp; Hardware</h3>
+            <ul>
+                <li>Arduino Platform</li>
+                <li>ESP32 Development</li>
+                <li>Sensor Integration</li>
+                <li>Microcontroller Programming</li>
+                <li>I2C Communication</li>
+                <li>UART Communication</li>
+                <li>Embedded System Prototyping</li>
+            </ul>
+        </div>
+
+        <div class="skill-category">
+            <h3>Mechanical Design</h3>
+            <ul>
+                <li>SolidWorks CAD</li>
+                <li>3D Modelling</li>
+                <li>Mechanical Component Design</li>
+                <li>Prototype Development</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section class="about-section">
+    <h2>Technical Interests</h2>
+
+    <div class="interest-block">
+        <h3>Robotics</h3>
+        <p>Developing robotic systems by integrating mechanical structures, sensors, embedded controllers, and software algorithms.</p>
+    </div>
+
+    <div class="interest-block">
+        <h3>Embedded Systems</h3>
+        <p>Designing microcontroller-based systems with sensor integration, real-time processing, and hardware-software interaction.</p>
+    </div>
+
+    <div class="interest-block">
+        <h3>IoT Applications</h3>
+        <p>Developing connected devices using embedded platforms, wireless communication, and real-time monitoring systems.</p>
+    </div>
+
+    <div class="interest-block">
+        <h3>Automation</h3>
+        <p>Exploring automated systems through sensor feedback, control logic, and intelligent decision-making.</p>
+    </div>
+
+    <div class="interest-block">
+        <h3>Computer Vision</h3>
+        <p>Applying computer vision techniques for perception, monitoring, and intelligent system applications.</p>
+    </div>
+</section>
+
+<section class="about-section">
+    <h2>Engineering Experience</h2>
+    <ul>
+        <li>Designed and developed embedded systems using Arduino and ESP32 platforms.</li>
+        <li>Built IoT-based prototypes integrating sensors, wireless communication, and user interfaces.</li>
+        <li>Developed robotic and automation simulations using ROS2 and Gazebo.</li>
+        <li>Created CAD models and mechanical designs for engineering prototypes.</li>
+        <li>Applied engineering workflows including requirement analysis, system design, implementation, testing, and evaluation.</li>
+    </ul>
+</section>
+
+<section class="about-section">
+    <h2>Career Direction</h2>
+    <ul>
+        <li>Seeking internship opportunities in mechatronics, robotics, embedded systems, and automation engineering.</li>
+        <li>Interested in contributing to multidisciplinary engineering projects involving hardware, software, and intelligent systems.</li>
+        <li>Motivated to further develop practical engineering skills through industry experience and real-world applications.</li>
     </ul>
 </section>
 {% endblock %}

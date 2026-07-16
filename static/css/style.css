@@ -250,3 +250,130 @@ body {
 .btn-danger:hover {
     background: #b91c1c;
 }
+/* ============================================================
+   About Me page
+   ============================================================ */
+
+.about-hero {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.profile-image {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #111827;
+}
+
+.profile-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e5e7eb;
+    color: #6b7280;
+    font-size: 0.85rem;
+}
+
+.profile-image-preview {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #111827;
+    margin: 1rem 0;
+    display: block;
+}
+
+.about-hero-text h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.3rem;
+}
+
+.about-hero-text .subtitle {
+    color: #6b7280;
+    font-size: 1rem;
+    margin-bottom: 0.6rem;
+}
+
+.btn-small {
+    padding: 0.3rem 0.7rem;
+    font-size: 0.85rem;
+}
+
+.about-section {
+    margin-bottom: 2rem;
+}
+
+.about-section h2 {
+    font-size: 1.3rem;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.about-section ul {
+    padding-left: 1.2rem;
+}
+
+.about-section li {
+    margin-bottom: 0.5rem;
+}
+
+.education-block h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.2rem;
+}
+
+.education-major,
+.education-university {
+    color: #374151;
+    margin-bottom: 0.3rem;
+}
+
+.education-label {
+    font-weight: 600;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+.skill-category h3 {
+    font-size: 1rem;
+    margin-bottom: 0.6rem;
+    color: #111827;
+}
+
+.skill-category ul {
+    padding-left: 1.1rem;
+}
+
+.skill-category li {
+    font-size: 0.92rem;
+    margin-bottom: 0.35rem;
+    color: #374151;
+}
+
+.interest-block {
+    margin-bottom: 1.2rem;
+}
+
+.interest-block h3 {
+    font-size: 1.05rem;
+    margin-bottom: 0.3rem;
+    color: #111827;
+}
+
+.interest-block p {
+    color: #374151;
+    margin: 0;
+}

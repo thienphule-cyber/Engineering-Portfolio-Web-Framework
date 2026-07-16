@@ -1,23 +1,87 @@
 """
 Engineering Portfolio Web Framework
-Main Flask application: loads project data from JSON files
-and renders them through Jinja2 templates.
-
-Projects are stored as individual .json files inside projects/.
-Contact info is stored in a single contact_info.json file.
-Both projects and contact info can be created/edited through the web UI.
+Main Flask application. Projects and contact info are now stored in
+PostgreSQL (via SQLAlchemy) instead of local JSON files, so data
+survives Render redeploys. Profile photo is still stored on disk
+(see note in edit_photo route about its own limitation).
 """
 
+import os
 import json
-import re
 from pathlib import Path
+from dotenv import load_dotenv
+from werkzeug.utils import secure_filename
 from flask import Flask, render_template, abort, request, redirect, url_for, flash
+from sqlalchemy import create_engine, Column, Integer, String, Text
+from sqlalchemy.orm import declarative_base, sessionmaker
+import re
+
+load_dotenv(dotenv_path=".env")  # reads .env when running locally; Render provides env vars directly
 
 app = Flask(__name__)
-app.secret_key = "change-this-secret-key"  # needed for flash messages
+app.secret_key = "change-this-secret-key"
 
-PROJECTS_DIR = Path(__file__).parent / "projects"
-CONTACT_FILE = Path(__file__).parent / "contact_info.json"
+IMAGES_DIR = Path(__file__).parent / "static" / "assets" / "images"
+PROFILE_PHOTO_FILENAME = "profile.jpg"
+ALLOWED_PHOTO_EXTENSIONS = {"jpg", "jpeg"}
+
+# ------------------------------------------------------------
+# Database setup
+# ------------------------------------------------------------
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL environment variable is not set.")
+
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(bind=engine)
+Base = declarative_base()
+
+
+class Project(Base):
+    __tablename__ = "projects"
+
+    id = Column(Integer, primary_key=True)
+    slug = Column(String, unique=True, nullable=False)
+    title = Column(String, nullable=False)
+    category = Column(String, default="Other")
+    objective = Column(Text, default="")
+    problem = Column(Text, default="")
+    # Stored as JSON-encoded text since these are lists of strings
+    architecture = Column(Text, default="[]")
+    hardware = Column(Text, default="[]")
+    software = Column(Text, default="[]")
+    process = Column(Text, default="[]")
+
+    def to_dict(self):
+        return {
+            "slug": self.slug,
+            "title": self.title,
+            "category": self.category,
+            "objective": self.objective,
+            "problem": self.problem,
+            "architecture": json.loads(self.architecture),
+            "hardware": json.loads(self.hardware),
+            "software": json.loads(self.software),
+            "process": json.loads(self.process),
+            "images": [],
+            "videos": [],
+            "documents": []
+        }
+
+
+class ContactInfo(Base):
+    __tablename__ = "contact_info"
+
+    id = Column(Integer, primary_key=True)
+    email = Column(String, default="")
+    phone = Column(String, default="")
+    linkedin = Column(String, default="")
+    github = Column(String, default="")
+
+
+# Create tables if they don't exist yet (safe to run every startup)
+Base.metadata.create_all(engine)
 
 
 # ------------------------------------------------------------
@@ -25,55 +89,98 @@ CONTACT_FILE = Path(__file__).parent / "contact_info.json"
 # ------------------------------------------------------------
 
 def load_all_projects():
-    """Load all project JSON files from the projects/ directory.
-    Returns an empty list if no project files exist yet."""
-    projects = []
-    for file in sorted(PROJECTS_DIR.glob("*.json")):
-        with open(file, "r", encoding="utf-8") as f:
-            data = json.load(f)
-            data["slug"] = file.stem  # filename without extension = URL slug
-            projects.append(data)
-    return projects
+    """Load all projects from the database."""
+    session = SessionLocal()
+    try:
+        projects = session.query(Project).order_by(Project.title).all()
+        return [p.to_dict() for p in projects]
+    finally:
+        session.close()
 
 
 def load_project(slug):
-    """Load a single project by its slug (filename without extension)."""
-    file_path = PROJECTS_DIR / f"{slug}.json"
-    if not file_path.exists():
-        return None
-    with open(file_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-        data["slug"] = slug
-        return data
+    """Load a single project by slug from the database."""
+    session = SessionLocal()
+    try:
+        project = session.query(Project).filter_by(slug=slug).first()
+        return project.to_dict() if project else None
+    finally:
+        session.close()
 
 
-def save_project(slug, project_data):
-    """Write project data to its JSON file, identified by slug."""
-    file_path = PROJECTS_DIR / f"{slug}.json"
-    with open(file_path, "w", encoding="utf-8") as f:
-        json.dump(project_data, f, indent=2, ensure_ascii=False)
+def save_new_project(slug, data):
+    """Insert a new project row into the database."""
+    session = SessionLocal()
+    try:
+        new_project = Project(
+            slug=slug,
+            title=data["title"],
+            category=data["category"],
+            objective=data["objective"],
+            problem=data["problem"],
+            architecture=json.dumps(data["architecture"]),
+            hardware=json.dumps(data["hardware"]),
+            software=json.dumps(data["software"]),
+            process=json.dumps(data["process"])
+        )
+        session.add(new_project)
+        session.commit()
+    finally:
+        session.close()
+
+
+def update_existing_project(slug, data):
+    """Update an existing project row in the database."""
+    session = SessionLocal()
+    try:
+        project = session.query(Project).filter_by(slug=slug).first()
+        if project is None:
+            return False
+        project.title = data["title"]
+        project.category = data["category"]
+        project.objective = data["objective"]
+        project.problem = data["problem"]
+        project.architecture = json.dumps(data["architecture"])
+        project.hardware = json.dumps(data["hardware"])
+        project.software = json.dumps(data["software"])
+        project.process = json.dumps(data["process"])
+        session.commit()
+        return True
+    finally:
+        session.close()
+
+
+def delete_project_by_slug(slug):
+    """Delete a project row from the database."""
+    session = SessionLocal()
+    try:
+        project = session.query(Project).filter_by(slug=slug).first()
+        if project is None:
+            return False
+        session.delete(project)
+        session.commit()
+        return True
+    finally:
+        session.close()
 
 
 def slugify(title):
-    """Convert a project title into a URL-safe, filename-safe slug.
-    Example: 'Autonomous Vehicle!' -> 'autonomous_vehicle'"""
+    """Convert a project title into a URL-safe, filename-safe slug."""
     slug = title.strip().lower()
-    slug = re.sub(r"[^a-z0-9\s-]", "", slug)   # remove special characters
-    slug = re.sub(r"[\s-]+", "_", slug)        # spaces/dashes -> underscore
+    slug = re.sub(r"[^a-z0-9\s-]", "", slug)
+    slug = re.sub(r"[\s-]+", "_", slug)
     return slug or "untitled_project"
 
 
 def lines_to_list(text):
-    """Convert a multi-line textarea input into a clean list of strings,
-    skipping empty lines."""
+    """Convert a multi-line textarea input into a list of strings."""
     if not text:
         return []
     return [line.strip() for line in text.splitlines() if line.strip()]
 
 
 def list_to_lines(items):
-    """Convert a list of strings back into newline-joined text,
-    used to pre-fill textareas when editing an existing project."""
+    """Convert a list of strings back into newline-joined text."""
     if not items:
         return ""
     return "\n".join(items)
@@ -84,18 +191,55 @@ def list_to_lines(items):
 # ------------------------------------------------------------
 
 def load_contact_info():
-    """Load contact info from contact_info.json.
-    Returns safe empty defaults if the file does not exist yet."""
-    if not CONTACT_FILE.exists():
-        return {"email": "", "phone": "", "linkedin": "", "github": ""}
-    with open(CONTACT_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+    """Load the single contact info row from the database.
+    Creates a default empty row on first use."""
+    session = SessionLocal()
+    try:
+        contact = session.query(ContactInfo).first()
+        if contact is None:
+            contact = ContactInfo(email="", phone="", linkedin="", github="")
+            session.add(contact)
+            session.commit()
+        return {
+            "email": contact.email,
+            "phone": contact.phone,
+            "linkedin": contact.linkedin,
+            "github": contact.github
+        }
+    finally:
+        session.close()
 
 
 def save_contact_info(data):
-    """Write contact info to contact_info.json."""
-    with open(CONTACT_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+    """Update the single contact info row in the database."""
+    session = SessionLocal()
+    try:
+        contact = session.query(ContactInfo).first()
+        if contact is None:
+            contact = ContactInfo()
+            session.add(contact)
+        contact.email = data["email"]
+        contact.phone = data["phone"]
+        contact.linkedin = data["linkedin"]
+        contact.github = data["github"]
+        session.commit()
+    finally:
+        session.close()
+
+
+# ------------------------------------------------------------
+# Profile photo helpers (still file-based, see note in edit_photo route)
+# ------------------------------------------------------------
+
+def is_allowed_photo(filename):
+    if "." not in filename:
+        return False
+    extension = filename.rsplit(".", 1)[1].lower()
+    return extension in ALLOWED_PHOTO_EXTENSIONS
+
+
+def profile_photo_exists():
+    return (IMAGES_DIR / PROFILE_PHOTO_FILENAME).exists()
 
 
 # ------------------------------------------------------------
@@ -110,7 +254,37 @@ def home():
 
 @app.route("/about")
 def about():
-    return render_template("about.html")
+    has_photo = profile_photo_exists()
+    return render_template("about.html", has_photo=has_photo)
+
+
+@app.route("/about/edit-photo", methods=["GET", "POST"])
+def edit_photo():
+    """Upload/replace the profile photo.
+    NOTE: this still writes to local disk, which is ephemeral on Render's
+    free tier. The photo will be lost on redeploy unless you upgrade to a
+    paid instance with a Persistent Disk, or store the photo in the
+    database as binary data instead."""
+    if request.method == "POST":
+        uploaded_file = request.files.get("photo")
+
+        if uploaded_file is None or uploaded_file.filename == "":
+            flash("No file selected.")
+            return redirect(url_for("edit_photo"))
+
+        if not is_allowed_photo(uploaded_file.filename):
+            flash("Only .jpg or .jpeg files are allowed.")
+            return redirect(url_for("edit_photo"))
+
+        IMAGES_DIR.mkdir(parents=True, exist_ok=True)
+        destination = IMAGES_DIR / PROFILE_PHOTO_FILENAME
+        uploaded_file.save(destination)
+
+        flash("Profile photo updated successfully.")
+        return redirect(url_for("about"))
+
+    has_photo = profile_photo_exists()
+    return render_template("edit_photo.html", has_photo=has_photo)
 
 
 # ------------------------------------------------------------
@@ -120,7 +294,6 @@ def about():
 @app.route("/projects")
 def gallery():
     projects = load_all_projects()
-    # Unique category list for the filter buttons (empty if no projects yet)
     categories = sorted(set(p.get("category", "Other") for p in projects))
     return render_template("gallery.html", projects=projects, categories=categories)
 
@@ -135,7 +308,6 @@ def project_detail(slug):
 
 @app.route("/projects/new", methods=["GET", "POST"])
 def add_project():
-    """Display the add-project form (GET) and handle its submission (POST)."""
     if request.method == "POST":
         title = request.form.get("title", "").strip()
         category = request.form.get("category", "").strip()
@@ -151,10 +323,8 @@ def add_project():
             return render_template("add_project.html", form_data=request.form)
 
         slug = slugify(title)
-        file_path = PROJECTS_DIR / f"{slug}.json"
 
-        # Avoid overwriting an existing project with the same slug
-        if file_path.exists():
+        if load_project(slug) is not None:
             flash(f"A project with slug '{slug}' already exists. Choose a different title.")
             return render_template("add_project.html", form_data=request.form)
 
@@ -166,25 +336,17 @@ def add_project():
             "architecture": architecture,
             "hardware": hardware,
             "software": software,
-            "process": process,
-            "images": [],
-            "videos": [],
-            "documents": []
+            "process": process
         }
 
-        save_project(slug, project_data)
+        save_new_project(slug, project_data)
         return redirect(url_for("project_detail", slug=slug))
 
-    # GET request: show empty form
     return render_template("add_project.html", form_data={})
 
 
 @app.route("/projects/<slug>/edit", methods=["GET", "POST"])
 def edit_project(slug):
-    """Display the edit form pre-filled with existing project data (GET),
-    and save changes back to the same JSON file (POST).
-    Note: the slug (and therefore the URL/filename) does not change even
-    if the title is edited, so existing links to this project keep working."""
     project = load_project(slug)
     if project is None:
         abort(404)
@@ -201,8 +363,6 @@ def edit_project(slug):
 
         if not title:
             flash("Project title is required.")
-            # Keep the slug in the form so re-rendering still points to the right project
-            request.form = request.form.copy()
             return render_template("edit_project.html", form_data=request.form, slug=slug)
 
         updated_data = {
@@ -213,19 +373,13 @@ def edit_project(slug):
             "architecture": architecture,
             "hardware": hardware,
             "software": software,
-            "process": process,
-            # Preserve existing asset references (images/videos/documents)
-            "images": project.get("images", []),
-            "videos": project.get("videos", []),
-            "documents": project.get("documents", [])
+            "process": process
         }
 
-        save_project(slug, updated_data)
+        update_existing_project(slug, updated_data)
         flash("Project updated successfully.")
         return redirect(url_for("project_detail", slug=slug))
 
-    # GET request: pre-fill form with existing project data,
-    # converting list fields back into newline-separated text for the textareas.
     form_data = {
         "title": project.get("title", ""),
         "category": project.get("category", ""),
@@ -241,11 +395,8 @@ def edit_project(slug):
 
 @app.route("/projects/<slug>/delete", methods=["POST"])
 def delete_project(slug):
-    """Delete a project's JSON file. Triggered from the project detail page."""
-    file_path = PROJECTS_DIR / f"{slug}.json"
-    if not file_path.exists():
+    if not delete_project_by_slug(slug):
         abort(404)
-    file_path.unlink()
     flash("Project deleted.")
     return redirect(url_for("gallery"))
 
@@ -256,14 +407,12 @@ def delete_project(slug):
 
 @app.route("/contact")
 def contact():
-    """Display the contact page using data from contact_info.json."""
     contact_info = load_contact_info()
     return render_template("contact.html", contact=contact_info)
 
 
 @app.route("/contact/edit", methods=["GET", "POST"])
 def edit_contact():
-    """Display the contact edit form (GET) and save changes (POST)."""
     if request.method == "POST":
         updated_info = {
             "email": request.form.get("email", "").strip(),
@@ -275,12 +424,10 @@ def edit_contact():
         flash("Contact information updated successfully.")
         return redirect(url_for("contact"))
 
-    # GET request: pre-fill form with current contact info
     contact_info = load_contact_info()
     return render_template("edit_contact.html", contact=contact_info)
 
 
 if __name__ == "__main__":
-    import os
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 5050))
     app.run(debug=False, host="0.0.0.0", port=port)
